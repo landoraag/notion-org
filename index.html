@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Minhas Aulas</title>
+  <meta name="theme-color" content="#f3e3ff" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div class="bg-blob b1"></div><div class="bg-blob b2"></div><div class="bg-blob b3"></div>
+
+  <!-- Login -->
+  <div id="login" class="login hidden">
+    <div class="glass login-card">
+      <div class="logo big"><svg viewBox="0 0 24 24"><path d="M7 3h10a2 2 0 0 1 2 2v16l-7-4-7 4V5a2 2 0 0 1 2-2z" fill="currentColor"/></svg></div>
+      <h1>Minhas Aulas</h1>
+      <p>Organize suas aulas, receba lembretes e confirme o que já foi dado.</p>
+      <button class="btn dark" id="btnLogin">Entrar com Google</button>
+      <small id="loginErr" class="err"></small>
+    </div>
+  </div>
+
+  <div class="shell" id="app">
+    <!-- Sidebar -->
+    <aside class="glass side">
+      <div class="logo"><svg viewBox="0 0 24 24"><path d="M7 3h10a2 2 0 0 1 2 2v16l-7-4-7 4V5a2 2 0 0 1 2-2z" fill="currentColor"/></svg></div>
+      <nav id="nav">
+        <button data-view="agenda" class="active"><span class="ico c-yellow" data-i="bell"></span>Agenda</button>
+        <button data-view="aulas"><span class="ico c-pink" data-i="book"></span>Aulas</button>
+        <button data-view="historico"><span class="ico c-orange" data-i="check"></span>Check-ins</button>
+        <button data-view="ajustes"><span class="ico c-blue" data-i="gear"></span>Ajustes</button>
+      </nav>
+      <div class="progress-card">
+        <div class="ring" id="ring"><span id="ringTxt">0%</span></div>
+        <b>Esta semana</b>
+        <small id="weekTxt">–</small>
+      </div>
+    </aside>
+
+    <!-- Main -->
+    <main class="glass main">
+      <header class="main-head">
+        <div>
+          <h2 id="viewTitle">Agenda de hoje</h2>
+          <p id="viewSub" class="sub"></p>
+        </div>
+        <div class="head-actions">
+          <button class="icon-btn" id="prevDay" aria-label="Dia anterior" data-i="left"></button>
+          <button class="chip" id="todayBtn">Hoje</button>
+          <button class="icon-btn" id="nextDay" aria-label="Próximo dia" data-i="right"></button>
+        </div>
+      </header>
+      <div id="view" class="view"></div>
+    </main>
+
+    <!-- Right -->
+    <section class="glass right">
+      <div class="cal-head">
+        <h3 id="monthTitle"></h3>
+        <div>
+          <button class="icon-btn sm" id="prevMonth" aria-label="Mês anterior" data-i="left"></button>
+          <button class="icon-btn sm" id="nextMonth" aria-label="Próximo mês" data-i="right"></button>
+        </div>
+      </div>
+      <div class="cal" id="cal"></div>
+      <div class="sched-head"><h3>Próximas aulas</h3><button class="link" data-view-link="aulas">Ver todas</button></div>
+      <div class="sched" id="upcoming"></div>
+      <button class="btn dark wide" id="btnNew">Nova aula</button>
+    </section>
+  </div>
+
+  <!-- Modal: aula -->
+  <dialog id="lessonModal" class="modal">
+    <form id="lessonForm" method="dialog" class="glass-solid">
+      <h3 id="lessonModalTitle">Nova aula</h3>
+      <label>Nome da aula
+        <input name="title" required maxlength="80" placeholder="Ex.: Introdução ao Canva" />
+      </label>
+      <label>Turma / etiqueta
+        <input name="group" list="groups" maxlength="30" placeholder="6–9 anos" />
+        <datalist id="groups"><option value="6–9 anos"><option value="10–12 anos"><option value="13–15 anos"></datalist>
+      </label>
+      <div class="row">
+        <label>Data <input type="date" name="date" required /></label>
+        <label>Repetir
+          <select name="repeat">
+            <option value="none">Não repete</option>
+            <option value="weekly">Toda semana</option>
+          </select>
+        </label>
+      </div>
+      <div class="row">
+        <label>Início <input type="time" name="start" required value="14:00" /></label>
+        <label>Fim <input type="time" name="end" required value="14:50" /></label>
+      </div>
+      <div class="row">
+        <label>Lembrete
+          <select name="remind">
+            <option value="0">Na hora</option>
+            <option value="5">5 min antes</option>
+            <option value="15">15 min antes</option>
+            <option value="30">30 min antes</option>
+            <option value="60">1 hora antes</option>
+            <option value="1440">1 dia antes</option>
+          </select>
+        </label>
+        <label class="until-wrap">Repetir até (opcional) <input type="date" name="until" /></label>
+      </div>
+      <label>Anotações
+        <textarea name="notes" rows="2" placeholder="Materiais, conteúdo, links…"></textarea>
+      </label>
+      <div class="modal-actions">
+        <button type="button" class="btn danger hidden" id="btnDelete">Excluir</button>
+        <span class="grow"></span>
+        <button type="button" class="btn ghost" id="btnCancel">Cancelar</button>
+        <button type="submit" class="btn dark">Salvar</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Modal: check-in -->
+  <dialog id="checkinModal" class="modal small">
+    <div class="glass-solid">
+      <div class="pop-ico" data-i="bell"></div>
+      <h3 id="ciTitle">Você deu a aula?</h3>
+      <p id="ciSub" class="sub"></p>
+      <div class="ci-actions">
+        <button class="btn ok" id="ciYes">Sim, dei a aula</button>
+        <button class="btn no" id="ciNo">Não dei</button>
+      </div>
+      <button class="link center" id="ciLater">Responder depois</button>
+    </div>
+  </dialog>
+
+  <div id="toasts" class="toasts" aria-live="polite"></div>
+  <div id="banner" class="banner hidden"></div>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

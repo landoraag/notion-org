@@ -1,0 +1,26 @@
+name: Deploy no Firebase
+
+# Configure em Settings → Secrets and variables → Actions:
+#   Secret   FIREBASE_SERVICE_ACCOUNT  = JSON da conta de serviço (Firebase Admin SDK)
+#   Variable FIREBASE_PROJECT_ID       = ID do projeto Firebase
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    if: ${{ vars.FIREBASE_PROJECT_ID != '' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+      - name: Instalar dependências das functions
+        run: npm install --prefix functions
+      - name: Gravar credencial
+        run: echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}' > "$RUNNER_TEMP/sa.json"
+      - name: Deploy (hosting + regras + functions)
+        run: npx --yes firebase-tools@13 deploy --only hosting,firestore:rules,functions --project "${{ vars.FIREBASE_PROJECT_ID }}" --non-interactive
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/sa.json
